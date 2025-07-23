@@ -3,7 +3,7 @@
 #include <string.h>
 #include "utils.h"
 
-int handleExecutionStyle(int argc, char **argv, FILE** archive);
+int stringHandleStyle(int argc, char **argv, FILE** archive);
 void runningShell(char string[], int executionStyle, FILE *archive);
 void getString(char string[], int executionStyle, FILE *archive);
 
@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 
     FILE *archive;
 
-    executionStyle = handleExecutionStyle(argc, argv, &archive);
+    executionStyle = stringHandleStyle(argc, argv, &archive);
     
 /*     while(isShellRunning)
     {
@@ -35,7 +35,7 @@ void runningShell(char string[], int executionStyle, FILE *archive)
     getString(string, executionStyle, archive);
 }
 
-int handleExecutionStyle(int argc, char **argv, FILE** archive)
+int stringHandleStyle(int argc, char **argv, FILE** archive)
 {
     if(argc == 1)
         return INTERACTIVE;
