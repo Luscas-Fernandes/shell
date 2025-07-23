@@ -25,7 +25,7 @@ int main(int argc, char **argv)
         runningShell(string, executionStyle, archive);
         } */
     runningShell(string, executionStyle, archive);
-        
+
     return 0; // explicit return 0
 }
 
@@ -78,20 +78,22 @@ void getString(char string[], int executionStyle, FILE *archive)
     {
         int stringSizeAccumulator = 0;
         int currentStringSize;
+        string[0] = '\0';
 
         while(fgets(currentLine, BUFFER_COMMANDS * BUFFER_SINGLE_COMMAND + 1, archive) != NULL) // + 1, '\0'
         {
+            if(currentLine[0] == '\n' || currentLine[0] == '\0')
+                continue;
+
+            currentLine[strcspn(currentLine, "\r\n")] = '\0';
+
             currentStringSize = strlen(currentLine);
 
-            stringSizeAccumulator += currentStringSize;
-
             if(currentLine[currentStringSize - 1] != ';')
-            {
-                currentLine[currentStringSize] = ';';
-                currentLine[currentStringSize + 1] = '\0';
-                currentLine[strcspn(currentLine, "\r\n")] = '\0';
-                currentLine[strcspn(currentLine, "\n")] = '\0';
-            }
+                strcat(currentLine, ";");
+
+            currentStringSize = strlen(currentLine);
+            stringSizeAccumulator += currentStringSize;
 
             if(stringSizeAccumulator < BUFFER_SINGLE_COMMAND - 1)
                 strcat(string, currentLine);
