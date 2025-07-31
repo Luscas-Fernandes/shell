@@ -6,6 +6,7 @@
 int stringHandleStyle(int argc, char **argv, FILE** archive);
 void runningShell(char string[], int executionStyle, FILE *archive);
 void getString(char string[], int executionStyle, FILE *archive);
+void stringClean(char *argumentString);
 
 
 int main(int argc, char **argv)
@@ -33,6 +34,7 @@ int main(int argc, char **argv)
 void runningShell(char string[], int executionStyle, FILE *archive)
 {
     getString(string, executionStyle, archive);
+    stringClean(string);
 }
 
 int stringHandleStyle(int argc, char **argv, FILE** archive)
@@ -65,7 +67,7 @@ void getString(char string[], int executionStyle, FILE *archive)
 
     if(executionStyle == INTERACTIVE)
     {
-        fgets(string, BUFFER_COMMANDS * BUFFER_SINGLE_COMMAND + 1, stdin); // + 1, '\0'
+        fgets(string, BUFFER_COMMANDS * BUFFER_SINGLE_COMMAND, stdin);
         
         if(feof(stdin)) 
         {
@@ -80,7 +82,7 @@ void getString(char string[], int executionStyle, FILE *archive)
         int currentStringSize;
         string[0] = '\0';
 
-        while(fgets(currentLine, BUFFER_COMMANDS * BUFFER_SINGLE_COMMAND + 1, archive) != NULL) // + 1, '\0'
+        while(fgets(currentLine, BUFFER_COMMANDS * BUFFER_SINGLE_COMMAND, archive) != NULL)
         {
             if(currentLine[0] == '\n' || currentLine[0] == '\0')
                 continue;
@@ -95,7 +97,7 @@ void getString(char string[], int executionStyle, FILE *archive)
             currentStringSize = strlen(currentLine);
             stringSizeAccumulator += currentStringSize;
 
-            if(stringSizeAccumulator < BUFFER_SINGLE_COMMAND - 1)
+            if(stringSizeAccumulator < BUFFER_SINGLE_COMMAND * BUFFER_COMMANDS - 1) // Buffer_single_command + buffer_commands - 1 = string + '\0'
                 strcat(string, currentLine);
             else
             {
@@ -110,7 +112,39 @@ void getString(char string[], int executionStyle, FILE *archive)
     }
 }
 
-/* void getCommands(char string[], char commands[][])
+void stringClean(char *argumentString) // can do without a string copy, i see it, but am doing in work atm. Get it better later 
 {
+    char argumentStringCopy[BUFFER_COMMANDS * BUFFER_SINGLE_COMMAND];
+    int stringHadChanges = FALSE;
+    int DefinitiveStringPos = 0;
+    
+    strcpy(argumentStringCopy, argumentString);
+    argumentString[0] = '\0'; // reset string
+    
+    
+    for(int i = 0; argumentStringCopy[i] != '\0'; i++)
+    {
+        if(argumentStringCopy[i] == ' ' && argumentString[0] == '\0')
+            continue;
+        
+        else if((argumentStringCopy[i] == ' ' && argumentStringCopy[i + 1] == ' ') || (argumentStringCopy[i] == ';' && argumentStringCopy[i + 1] == ';'))   
+            continue;
+        
+        else if((argumentStringCopy[i] == ' ' && argumentStringCopy[i + 1] == ';') || (argumentStringCopy[i] == ';' && argumentStringCopy[i + 1] == ' '))
+            continue;
+        
+        
+        argumentString[DefinitiveStringPos++] = argumentStringCopy[i];
+        stringHadChanges = TRUE;
+    }
 
-} */
+    if(stringHadChanges) // final string command, how can I free the not used memory ?
+        strcat(argumentString, '\0');
+
+    printf("Arguments String: %s", argumentString);
+}
+
+void getCommands(char *string, char **commands)
+{
+    
+}
