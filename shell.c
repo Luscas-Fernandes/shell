@@ -4,9 +4,10 @@
 #include "utils.h"
 
 int stringHandleStyle(int argc, char **argv, FILE** archive);
-void runningShell(char string[], int executionStyle, FILE *archive);
+void runningShell(char string[], int executionStyle, FILE *archive, char commands[BUFFER_COMMANDS][BUFFER_SINGLE_COMMAND]);
 void getString(char string[], int executionStyle, FILE *archive);
 void stringClean(char *argumentString);
+void getCommands(char *string, char commands[BUFFER_COMMANDS][BUFFER_SINGLE_COMMAND]);
 
 
 int main(int argc, char **argv)
@@ -25,16 +26,19 @@ int main(int argc, char **argv)
     {
         runningShell(string, executionStyle, archive);
         } */
-    runningShell(string, executionStyle, archive);
+    runningShell(string, executionStyle, archive, commands);
 
     return 0; // explicit return 0
 }
 
 
-void runningShell(char string[], int executionStyle, FILE *archive)
+void runningShell(char string[], int executionStyle, FILE *archive, char commands[BUFFER_COMMANDS][BUFFER_SINGLE_COMMAND])
 {
     getString(string, executionStyle, archive);
     stringClean(string);
+    // printf("%s\n", string);
+    getCommands(string, commands);
+
 }
 
 int stringHandleStyle(int argc, char **argv, FILE** archive)
@@ -108,7 +112,7 @@ void getString(char string[], int executionStyle, FILE *archive)
 
         string[stringSizeAccumulator + 1] = '\0';
 
-        fprintf(stdout, "%s\n", string);
+        // fprintf(stdout, "%s\n", string);
     }
 }
 
@@ -138,13 +142,39 @@ void stringClean(char *argumentString) // can do without a string copy, i see it
         stringHadChanges = TRUE;
     }
 
-    if(stringHadChanges) // final string command, how can I free the not used memory ?
-        strcat(argumentString, '\0');
+    if(stringHadChanges) // final string command, but can I free the not used memory ?
+        strcat(argumentString, "\0");
 
-    printf("Arguments String: %s", argumentString);
+    // printf("Arguments String: %s", argumentString);
 }
 
-void getCommands(char *string, char **commands)
+void getCommands(char *string, char commands[BUFFER_COMMANDS][BUFFER_SINGLE_COMMAND])
 {
-    
+    int commandNumber = 0;
+    int stringPos = 0;
+
+    for(int i = 0; string[i] != '\0'; i++)
+    {
+        if(string[i] != ';')
+            commands[commandNumber][i] = string[stringPos++];
+            
+        else
+        {
+            i = 0;
+            commandNumber++;
+        }
+
+        if(commandNumber == (BUFFER_COMMANDS - 1))
+            break;
+
+    }
+
+    for(int i = 0; i < BUFFER_COMMANDS; i++)
+    {
+        if(commands[i][0] == '\0')
+            continue;
+
+        else
+            printf("%s\n", commands[i]);
+    }
 }
