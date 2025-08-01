@@ -1,8 +1,9 @@
 *.txt
 *.o
-lfaa3.c
 
 shell
 test
 
 test.c
+
+.vscode
