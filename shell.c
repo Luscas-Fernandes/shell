@@ -21,7 +21,7 @@ int main(int argc, char **argv)
     FILE *archive;
 
     executionStyle = stringHandleStyle(argc, argv, &archive);
-    
+
 /*     while(isShellRunning)
     {
         runningShell(string, executionStyle, archive);
@@ -72,7 +72,7 @@ void getString(char string[], int executionStyle, FILE *archive)
     if(executionStyle == INTERACTIVE)
     {
         fgets(string, BUFFER_COMMANDS * BUFFER_SINGLE_COMMAND, stdin);
-        
+
         if(feof(stdin)) 
         {
             fprintf(stdout, "Exiting via \"CTRL+D\"\n");
@@ -121,23 +121,23 @@ void stringClean(char *argumentString) // can do without a string copy, i see it
     char argumentStringCopy[BUFFER_COMMANDS * BUFFER_SINGLE_COMMAND];
     int stringHadChanges = FALSE;
     int DefinitiveStringPos = 0;
-    
+
     strcpy(argumentStringCopy, argumentString);
     argumentString[0] = '\0'; // reset string
-    
-    
+
+
     for(int i = 0; argumentStringCopy[i] != '\0'; i++)
     {
         if(argumentStringCopy[i] == ' ' && argumentString[0] == '\0')
             continue;
-        
+
         else if((argumentStringCopy[i] == ' ' && argumentStringCopy[i + 1] == ' ') || (argumentStringCopy[i] == ';' && argumentStringCopy[i + 1] == ';'))   
             continue;
-        
+
         else if((argumentStringCopy[i] == ' ' && argumentStringCopy[i + 1] == ';') || (argumentStringCopy[i] == ';' && argumentStringCopy[i + 1] == ' '))
             continue;
-        
-        
+
+
         argumentString[DefinitiveStringPos++] = argumentStringCopy[i];
         stringHadChanges = TRUE;
     }
@@ -152,19 +152,25 @@ void getCommands(char *string, char commands[BUFFER_COMMANDS][BUFFER_SINGLE_COMM
 {
     int commandNumber = 0;
     int stringPos = 0;
+    int commandsPos = 0;
 
     for(int i = 0; string[i] != '\0'; i++)
     {
         if(string[i] != ';')
-            commands[commandNumber][i] = string[stringPos++];
-            
-        else
         {
-            i = 0;
-            commandNumber++;
+            commands[commandNumber][commandsPos] = string[stringPos++];
+            commandsPos++;
         }
 
-        if(commandNumber == (BUFFER_COMMANDS - 1))
+        else
+        {
+            commands[commandNumber][++commandsPos] = '\0';
+            commandsPos = 0;
+            commandNumber++;
+            stringPos++;
+        }
+
+        if(commandNumber == BUFFER_COMMANDS)
             break;
 
     }
