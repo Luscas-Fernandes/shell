@@ -1,5 +1,9 @@
 #pragma once
 
+#include <stdint.h>
+
+typedef uint8_t int_byte;
+
 #define BUFFER_COMMANDS 1024
 #define BUFFER_SINGLE_COMMAND 128
 

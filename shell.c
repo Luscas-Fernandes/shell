@@ -116,36 +116,43 @@ void getString(char string[], int executionStyle, FILE *archive)
     }
 }
 
-void stringClean(char *argumentString) // can do without a string copy, i see it, but am doing in work atm. Get it better later 
+void stringClean(char *argumentString) // can do it better, will work on it later.
 {
     char argumentStringCopy[BUFFER_COMMANDS * BUFFER_SINGLE_COMMAND];
-    int stringHadChanges = FALSE;
     int DefinitiveStringPos = 0;
+    int_byte stringHadChanges = FALSE;
+    int_byte isNewCommand = TRUE;
 
     strcpy(argumentStringCopy, argumentString);
     argumentString[0] = '\0'; // reset string
 
-
     for(int i = 0; argumentStringCopy[i] != '\0'; i++)
     {
-        if(argumentStringCopy[i] == ' ' && argumentString[0] == '\0')
+        if(argumentStringCopy[i] == ';')
+        {
+            isNewCommand = TRUE;
+            argumentString[DefinitiveStringPos++] = ';';
+            continue;
+        }
+
+        if((argumentStringCopy[i] == ' ' && argumentStringCopy[i + 1] == ' ') || 
+        (argumentStringCopy[i] == ';' && argumentStringCopy[i + 1] == ';') ||
+        (argumentStringCopy[i] == ' ' && argumentStringCopy[i + 1] == ';'))
             continue;
 
-        else if((argumentStringCopy[i] == ' ' && argumentStringCopy[i + 1] == ' ') || (argumentStringCopy[i] == ';' && argumentStringCopy[i + 1] == ';'))   
+        if(isNewCommand && argumentStringCopy[i] == ' ')
             continue;
-
-        else if((argumentStringCopy[i] == ' ' && argumentStringCopy[i + 1] == ';') || (argumentStringCopy[i] == ';' && argumentStringCopy[i + 1] == ' '))
-            continue;
-
 
         argumentString[DefinitiveStringPos++] = argumentStringCopy[i];
         stringHadChanges = TRUE;
+        isNewCommand = FALSE;
+
     }
 
     if(stringHadChanges) // final string command, but can I free the not used memory ?
         strcat(argumentString, "\0");
 
-    // printf("Arguments String: %s", argumentString);
+    printf("Arguments String:%s\n", argumentString);
 }
 
 void getCommands(char *string, char commands[BUFFER_COMMANDS][BUFFER_SINGLE_COMMAND])
@@ -175,6 +182,7 @@ void getCommands(char *string, char commands[BUFFER_COMMANDS][BUFFER_SINGLE_COMM
 
     }
 
+    /* 
     for(int i = 0; i < BUFFER_COMMANDS; i++)
     {
         if(commands[i][0] == '\0')
@@ -183,4 +191,5 @@ void getCommands(char *string, char commands[BUFFER_COMMANDS][BUFFER_SINGLE_COMM
         else
             printf("%s\n", commands[i]);
     }
+     */
 }
